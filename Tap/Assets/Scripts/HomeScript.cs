@@ -10,7 +10,8 @@ public class HomeScript : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		
+		// mulai comboScore dari awal
+		PlayerPrefs.SetInt ("comboScore", 0);
 	}
 	
 	// Update is called once per frame
@@ -21,9 +22,15 @@ public class HomeScript : MonoBehaviour {
 			if(hit != null && hit.collider != null){
 				if (hit.collider.tag == "Box") {
 					hit.collider.gameObject.GetComponent<SpriteRenderer>().sprite = green;
-					StartCoroutine(LoadScene(1));
+					if( PlayerPrefs.GetInt("lastLevel") > 0 )
+						StartCoroutine(LoadScene(PlayerPrefs.GetInt("lastLevel")));
+					else
+						StartCoroutine(LoadScene(1));
 				}
 			}
+		}
+		else if(Input.GetKeyDown(KeyCode.Escape)){
+			Application.Quit ();
 		}
 	}
 

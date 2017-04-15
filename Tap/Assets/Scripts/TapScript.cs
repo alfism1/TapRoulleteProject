@@ -8,7 +8,7 @@ using UnityEngine.Sprites;
 public class TapScript : MonoBehaviour {
 
 	int rand, boxCount, index; 
-	int score;
+	int score, comboScore;
 	int boxNumber;
 
 	string boxNumberString;
@@ -27,7 +27,9 @@ public class TapScript : MonoBehaviour {
 		rand = Random.Range (1, boxCount+1);
 
 		score = PlayerPrefs.GetInt("score");
+		comboScore = PlayerPrefs.GetInt ("comboScore");
 		scoreText.text = PlayerPrefs.GetInt("score").ToString();
+		Debug.Log (comboScore);
 
 		// scene manager index
 		index = SceneManager.GetActiveScene().buildIndex;
@@ -44,7 +46,45 @@ public class TapScript : MonoBehaviour {
 					boxNumber = int.Parse(boxNumberString);
 
 					if (boxNumber%rand==0) {
-						score += (boxCount);
+						// comboScore
+						if (comboScore < 16)
+							comboScore += 1;
+						else
+							comboScore = 16;
+						PlayerPrefs.SetInt ("comboScore", comboScore);
+						if (comboScore == 3) {
+							Debug.Log ("Triple lucky");
+						} else if (comboScore == 4) {
+							Debug.Log ("Mega lucky");
+						} else if (comboScore == 5) {
+							Debug.Log ("Extraordinary");
+						} else if (comboScore == 6) {
+							Debug.Log ("Staahp");
+						} else if (comboScore == 7) {
+							Debug.Log ("I said staahp");
+						} else if (comboScore == 8) {
+							Debug.Log ("Frenzy!");
+						} else if (comboScore == 9) {
+							Debug.Log ("Super Frenzy!");
+						} else if (comboScore == 10) {
+							Debug.Log ("Combo master");
+						} else if (comboScore == 11) {
+							Debug.Log ("Hold my beer");
+						} else if (comboScore == 12) {
+							Debug.Log ("Cant touch this");
+						} else if (comboScore == 13) {
+							Debug.Log ("Bananaexpert");
+						} else if (comboScore == 14) {
+							Debug.Log ("Button-muncher");
+						} else if (comboScore == 15) {
+							Debug.Log ("Tap Lord");
+						} else if (comboScore >= 16) {
+							Debug.Log ("Moom get the camera!");
+						}
+
+						// score
+//						score += (boxCount);
+						score += 1;						
 						PlayerPrefs.SetInt ("score", score);
 						
 						Debug.Log ("True : " + boxNumber + "  % " + rand + " --- score : " + score);
@@ -56,7 +96,13 @@ public class TapScript : MonoBehaviour {
 						}
 					}						
 					else{
-						score -= (boxCount);
+						// comboScore
+						comboScore = 0;
+						PlayerPrefs.SetInt ("comboScore", comboScore);
+
+						// score
+//						score -= (boxCount);
+						score -= 1;
 						PlayerPrefs.SetInt ("score", score);
 
 						Debug.Log ("False : " + boxNumber + "  % " + rand + " --- score : " + score);	
@@ -79,9 +125,14 @@ public class TapScript : MonoBehaviour {
 							boxs.transform.GetChild (i).GetComponent<SpriteRenderer> ().sprite = red;
 						}
 					}
+					// simpan level terakhir
+					PlayerPrefs.SetInt("lastLevel", index);
 					StartCoroutine (LoadScene(index));
 				}
 			}
+		}
+		else if(Input.GetKeyDown(KeyCode.Escape)){
+			SceneManager.LoadScene(0);	// back to home
 		}
 	}
 
