@@ -7,24 +7,28 @@ using UnityEngine.Sprites;
 
 public class TapScript : MonoBehaviour {
 
-	int rand, boxCount, index; 
+	int rand, circleCount, index; 
 	int score, comboScore;
-	int boxNumber;
+	int circleNumber, circleSiblingIndex;
 
-	string boxNumberString;
+	string circleNumberString;
 
-	public GameObject boxs;
+	public GameObject circles;
 	public Text scoreText;
 
+
 	Sprite green, red;
+	Sprite greenPushed, redPushed;
 
-	void Start () {
-		green = Resources.Load("Sprites/green", typeof(Sprite)) as Sprite;
-		red = Resources.Load("Sprites/red", typeof(Sprite)) as Sprite;
+	void Start () {		
+		green = Resources.Load("Sprites/greenunpushed", typeof(Sprite)) as Sprite;
+		red = Resources.Load("Sprites/redunpushed", typeof(Sprite)) as Sprite;
+		greenPushed = Resources.Load("Sprites/greenpushed", typeof(Sprite)) as Sprite;
+		redPushed = Resources.Load("Sprites/redpushed", typeof(Sprite)) as Sprite;
 
-		boxCount = boxs.transform.childCount;
+		circleCount = circles.transform.childCount;
 
-		rand = Random.Range (1, boxCount+1);
+		rand = Random.Range (1, circleCount+1);
 
 		score = PlayerPrefs.GetInt("score");
 		comboScore = PlayerPrefs.GetInt ("comboScore");
@@ -38,14 +42,15 @@ public class TapScript : MonoBehaviour {
 	void Update () {
 
 		if (Input.GetMouseButtonUp (0)) {
-			Vector3 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-			RaycastHit2D hit = Physics2D.Raycast(pos, Vector2.zero);
-			if(hit != null && hit.collider != null){
-				if (hit.collider.tag == "Box") {
-					boxNumberString = hit.collider.name;
-					boxNumber = int.Parse(boxNumberString);
+			Vector3 pos = Camera.main.ScreenToWorldPoint (Input.mousePosition);
+			RaycastHit2D hit = Physics2D.Raycast (pos, Vector2.zero);
+			if (hit != null && hit.collider != null) {
+				if (hit.collider.tag == "Circle") {
+					circleSiblingIndex = hit.collider.gameObject.transform.GetSiblingIndex ();
+					circleNumberString = hit.collider.name;
+					circleNumber = int.Parse (circleNumberString);
 
-					if (boxNumber%rand==0) {
+					if (circleNumber % rand == 0) {
 						// comboScore
 						if (comboScore < 16)
 							comboScore += 1;
@@ -83,51 +88,57 @@ public class TapScript : MonoBehaviour {
 						}
 
 						// score
-//						score += (boxCount);
 						score += 1;						
 						PlayerPrefs.SetInt ("score", score);
-						
-						Debug.Log ("True : " + boxNumber + "  % " + rand + " --- score : " + score);
 
-						// pindah scene
-						index = Random.Range(SceneManager.GetActiveScene().buildIndex, SceneManager.GetActiveScene().buildIndex+2);
+//						Debug.Log ("True : " + circleNumber + "  % " + rand + " --- score : " + score);
+
+						// index pindah scene
+						index = Random.Range (SceneManager.GetActiveScene ().buildIndex, SceneManager.GetActiveScene ().buildIndex + 2);
 						if (index > SceneManager.sceneCountInBuildSettings - 1) {
 							index = SceneManager.sceneCountInBuildSettings - 1;
 						}
-					}						
-					else{
+
+						// ganti warna
+						hit.collider.gameObject.transform.GetComponent<SpriteRenderer>().sprite = greenPushed;
+					} else {
 						// comboScore
 						comboScore = 0;
 						PlayerPrefs.SetInt ("comboScore", comboScore);
 
 						// score
-//						score -= (boxCount);
 						score -= 1;
 						PlayerPrefs.SetInt ("score", score);
 
-						Debug.Log ("False : " + boxNumber + "  % " + rand + " --- score : " + score);	
+						Debug.Log ("False : " + circleNumber + "  % " + rand + " --- score : " + score);	
 
-						// pindah scene
-						index = Random.Range(SceneManager.GetActiveScene().buildIndex-2, SceneManager.GetActiveScene().buildIndex);
+						// index pindah scene
+						index = Random.Range (SceneManager.GetActiveScene ().buildIndex - 2, SceneManager.GetActiveScene ().buildIndex);
 						if (index < 1) {												
 							index = 1;
 						}
-					}
-					// disable box dan ubah sprite masing-masing box
-					for(int i = 0; i<boxCount; i++){
-						boxs.transform.GetChild (i).GetComponent<BoxCollider2D> ().enabled = false;
-						boxNumberString = boxs.transform.GetChild (i).name;
-						boxNumber = int.Parse(boxNumberString);
 
-						if (boxNumber % rand == 0) {							
-							boxs.transform.GetChild (i).GetComponent<SpriteRenderer> ().sprite = green;
+						// ganti warna
+						hit.collider.gameObject.transform.GetComponent<SpriteRenderer>().sprite = redPushed;
+					}
+					// disable circle dan ubah sprite masing-masing circle
+					for (int i = 0; i < circleCount; i++) {
+						if (i == circleSiblingIndex)
+							continue;
+						
+						circles.transform.GetChild (i).GetComponent<CircleCollider2D> ().enabled = false;
+						circleNumberString = circles.transform.GetChild (i).name;
+						circleNumber = int.Parse (circleNumberString);
+
+						if (circleNumber % rand == 0) {							
+							circles.transform.GetChild (i).GetComponent<SpriteRenderer> ().sprite = green;
 						} else {							
-							boxs.transform.GetChild (i).GetComponent<SpriteRenderer> ().sprite = red;
+							circles.transform.GetChild (i).GetComponent<SpriteRenderer> ().sprite = red;
 						}
 					}
 					// simpan level terakhir
-					PlayerPrefs.SetInt("lastLevel", index);
-					StartCoroutine (LoadScene(index));
+					PlayerPrefs.SetInt ("lastLevel", index);
+					StartCoroutine (LoadScene (index));
 				}
 			}
 		}
@@ -141,4 +152,3 @@ public class TapScript : MonoBehaviour {
 		SceneManager.LoadScene (index);
 	}
 }
-	

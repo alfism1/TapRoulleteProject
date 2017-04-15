@@ -20,7 +20,7 @@ public class HomeScript : MonoBehaviour {
 			Vector3 pos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 			RaycastHit2D hit = Physics2D.Raycast(pos, Vector2.zero);
 			if(hit != null && hit.collider != null){
-				if (hit.collider.tag == "Box") {
+				if (hit.collider.tag == "Circle") {
 					hit.collider.gameObject.GetComponent<SpriteRenderer>().sprite = green;
 					if( PlayerPrefs.GetInt("lastLevel") > 0 )
 						StartCoroutine(LoadScene(PlayerPrefs.GetInt("lastLevel")));
