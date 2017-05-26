@@ -19,19 +19,27 @@ public class Tapped : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if (Input.GetMouseButton(0)) {
+			if(!tapped){
+				Vector3 pos = Camera.main.ScreenToWorldPoint (Input.mousePosition);
+				RaycastHit2D hit = Physics2D.Raycast (pos, Vector2.zero);
+				if (hit != null && hit.collider != null) {
+					if (hit.collider.tag == "Circle") {
+						lastTappedCircle = hit.collider.gameObject;
+						lastTappedCircle.transform.GetComponent<SpriteRenderer> ().sprite = pushed;
+					}
+				} else {								
+					lastTappedCircle.transform.GetComponent<SpriteRenderer> ().sprite = unpushed;
+				}	
+			}
+		}
+
+		if (Input.GetMouseButtonUp (0)) {
 			Vector3 pos = Camera.main.ScreenToWorldPoint (Input.mousePosition);
 			RaycastHit2D hit = Physics2D.Raycast (pos, Vector2.zero);
 			if (hit != null && hit.collider != null) {
 				if (hit.collider.tag == "Circle") {
-					lastTappedCircle = hit.collider.gameObject;
 					tapped = true;
-					lastTappedCircle.transform.GetComponent<SpriteRenderer> ().sprite = pushed;
 				}
-			} else {				
-				if (tapped) {
-					tapped = false;
-					lastTappedCircle.transform.GetComponent<SpriteRenderer> ().sprite = unpushed;
-				}					
 			}
 		}
 	}

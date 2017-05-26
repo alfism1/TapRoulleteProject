@@ -48,23 +48,22 @@ public class TapScript : MonoBehaviour {
 	}
 
 	void Update () {		
-		if (Input.GetMouseButton(0)) {							
-			Vector3 pos = Camera.main.ScreenToWorldPoint (Input.mousePosition);
-			RaycastHit2D hit = Physics2D.Raycast (pos, Vector2.zero);
-			if (hit != null && hit.collider != null) {
-				if (hit.collider.tag == "Circle") {
-					lastTappedCircle = hit.collider.gameObject;
-					tapped = !tapped;
-					if (tapped) {
+		if (Input.GetMouseButton(0)) {
+			// jika belum ada circle yang ditap
+			if (tapped == false) {
+				Vector3 pos = Camera.main.ScreenToWorldPoint (Input.mousePosition);
+				RaycastHit2D hit = Physics2D.Raycast (pos, Vector2.zero);
+				if (hit != null && hit.collider != null) {
+					if (hit.collider.tag == "Circle") {
+						lastTappedCircle = hit.collider.gameObject;
 						lastTappedCircle.transform.GetComponent<SpriteRenderer> ().sprite = pushed;
 					}
-				}
-			} else {				
-				if (tapped) {
-					tapped = false;
-					lastTappedCircle.transform.GetComponent<SpriteRenderer> ().sprite = unpushed;
+				} else {
+					if(lastTappedCircle != null)
+						lastTappedCircle.transform.GetComponent<SpriteRenderer> ().sprite = unpushed;
 				}
 			}
+				
 		}
 
 		else if (Input.GetMouseButtonUp (0)) {
@@ -72,6 +71,7 @@ public class TapScript : MonoBehaviour {
 			RaycastHit2D hit = Physics2D.Raycast (pos, Vector2.zero);
 			if (hit != null && hit.collider != null) {
 				if (hit.collider.tag == "Circle") {
+					tapped = true;
 					circleSiblingIndex = hit.collider.gameObject.transform.GetSiblingIndex ();
 					circleNumberString = hit.collider.name;
 					circleNumber = int.Parse (circleNumberString);
@@ -123,7 +123,7 @@ public class TapScript : MonoBehaviour {
 						index = Random.Range (SceneManager.GetActiveScene ().buildIndex, SceneManager.GetActiveScene ().buildIndex + 2);
 						if (index > SceneManager.sceneCountInBuildSettings - 1) {
 							index = SceneManager.sceneCountInBuildSettings - 1;
-						}
+						}							
 					} else {
 						// comboScore
 						comboScore = 0;
@@ -171,7 +171,7 @@ public class TapScript : MonoBehaviour {
 	}
 
 	IEnumerator LoadScene(int index){
-		yield return new WaitForSeconds(1);
+		yield return new WaitForSeconds(0.3f);
 		SceneManager.LoadScene (index);
 	}
 }
