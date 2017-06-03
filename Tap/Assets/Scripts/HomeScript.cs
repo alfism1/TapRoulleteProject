@@ -10,8 +10,16 @@ public class HomeScript : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		PlayerPrefs.DeleteAll ();
+
 		// mulai comboScore dari awal
 		PlayerPrefs.SetInt ("comboScore", 0);
+
+		// jika health belum diset
+		if( PlayerPrefs.GetInt("setHealth") == 0 ){
+			PlayerPrefs.SetInt ("health", 500);
+			PlayerPrefs.SetInt ("setHealth", 1);
+		}
 	}
 	
 	// Update is called once per frame
@@ -35,7 +43,7 @@ public class HomeScript : MonoBehaviour {
 	}
 
 	IEnumerator LoadScene(int index){
-		yield return new WaitForSeconds(1);
+		yield return new WaitForSeconds(0.5f);
 		SceneManager.LoadScene (index);
 	}
 }

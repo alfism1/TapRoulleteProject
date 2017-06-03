@@ -8,13 +8,13 @@ using UnityEngine.Sprites;
 public class TapScript : MonoBehaviour {
 
 	int rand, circleCount, index; 
-	int score, comboScore;
+	int score, comboScore, health;
 	int circleNumber, circleSiblingIndex;
 
 	string circleNumberString;
 
 	public GameObject circles;
-	public Text scoreText;
+	public Text scoreText, healthText;
 
 	Sprite green, red;
 	Sprite greenPushed, redPushed;
@@ -37,6 +37,9 @@ public class TapScript : MonoBehaviour {
 		score = PlayerPrefs.GetInt("score");
 		comboScore = PlayerPrefs.GetInt ("comboScore");
 		scoreText.text = PlayerPrefs.GetInt("score").ToString();
+
+		health = PlayerPrefs.GetInt("health");
+		healthText.text = PlayerPrefs.GetInt("health").ToString();
 
 		// scene manager index
 		index = SceneManager.GetActiveScene().buildIndex;
@@ -133,7 +136,11 @@ public class TapScript : MonoBehaviour {
 						score -= 1;
 						PlayerPrefs.SetInt ("score", score);
 
-//						Debug.Log ("False : " + circleNumber + "  % " + rand + " --- score : " + score);	
+//						Debug.Log ("False : " + circleNumber + "  % " + rand + " --- score : " + score);
+
+						// kurangi health
+						health -= 1;
+						PlayerPrefs.SetInt ("health", health);
 
 						// index pindah scene
 						index = Random.Range (SceneManager.GetActiveScene ().buildIndex - 2, SceneManager.GetActiveScene ().buildIndex);
@@ -143,7 +150,7 @@ public class TapScript : MonoBehaviour {
 					}
 					// disable circle dan ubah sprite masing-masing circle
 					for (int i = 0; i < circleCount; i++) {																		
-						circles.transform.GetChild (i).GetComponent<CircleCollider2D> ().enabled = false;
+//						circles.transform.GetChild (i).GetComponent<CircleCollider2D> ().enabled = false;
 						circleNumberString = circles.transform.GetChild (i).name;
 						circleNumber = int.Parse (circleNumberString);
 
@@ -171,7 +178,7 @@ public class TapScript : MonoBehaviour {
 	}
 
 	IEnumerator LoadScene(int index){
-		yield return new WaitForSeconds(0.3f);
+		yield return new WaitForSeconds(0.2f);
 		SceneManager.LoadScene (index);
 	}
 }
